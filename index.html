@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="js/pixi.min.js"></script>
+		<script>
+      let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight});
+      let alpha;
+      let beta;
+      document.body.appendChild(app.view);
+      
+      let img = new PIXI.Sprite.from("img.jpg");
+      img.width = window.innerWidth;
+      img.height = window.innerHeight;
+      app.stage.addChild(img);
+      
+      depthMap = new PIXI.Sprite.from("depthMap.jpg");
+      depthMap.width = window.innerWidth;
+      depthMap.height = window.innerHeight;
+      app.stage.addChild(depthMap);
+        
+      displacementFilter = new PIXI.filters.DisplacementFilter(depthMap);
+      app.stage.filters = [displacementFilter];
+      
+      window.onmousemove = function(e) {
+        displacementFilter.scale.x = (window.innerWidth / 2 - e.clientX) /40;
+        displacementFilter.scale.y = (window.innerHeight / 2 - e.clientY) /40;
+        console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
+      };
+      
+      /*
+      //if (window.DeviceOrientationEvent) {
+         window.addEventListener("deviceorientation", (event) => {
+           const rotateDegrees = event.alpha; // alpha: rotation around z-axis
+           const leftToRight = event.gamma; // gamma: left to right
+           const frontToBack = event.beta; // beta: front back motion
+           //debugger;
+           handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
+         }, true);
+      //}
+      const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
+        console.log(leftToRight + " " + rotateDegrees);
+        displacementFilter.scale.x = (window.innerWidth / 2 - leftToRight) /40;
+        displacementFilter.scale.y = (window.innerHeight / 2 - frontToBack) /40;
+      };*/
+      
+      function direction() {
+            var rotateDegrees = event.alpha; // alpha: rotation around z-axis
+            var leftToRight = event.gamma; // gamma: left to right
+            var frontToBack = event.beta; // beta: front back motion
+            console.log(leftToRight + " " + rotateDegrees);
+            displacementFilter.scale.x = rotateDegrees/10;
+            displacementFilter.scale.y = frontToBack/10;
+      }
+      var mobileDevice = false;
+      try {
+        DeviceMotionEvent;
+        mobileDevice = true;
+      }catch{
+        console.log("DeviceMotionEvent is not defined");
+      }
+          
+          
+      if (mobileDevice && typeof DeviceMotionEvent.requestPermission==="function") { // iOS 13+ devices
+        document.getElementsByTagName("canvas")[0].addEventListener("click touchstart", function(){
+          DeviceMotionEvent.requestPermission()
+            .then((state)=>{
+              if (state==="granted") {
+                window.addEventListener("deviceorientation", direction);
+                compassOn=true;
+              } else {
+                console.error("Motion sensor access denied.");}})
+            .catch(console.error);
+          }, 
+        false);
+             
+            } else { // non iOS 13+ devices
+              window.addEventListener("deviceorientation", direction);
+        }
+		</script>
+	</body>
+</html>
