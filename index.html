@@ -8,7 +8,17 @@
 		</style>
 	</head>
 	<body>
+    <div id="dial">
+          <div id="instructions" onclick="enableSensor()">
+            <span id="close">×</span>
+            <!--<strong>iOS:</strong> 
+            Allow motion sensor access.<br>
+            <strong>Android:</strong> Align smartphone to the north, reload page, allow motion sensor access.</div> -->
+            Click to start device orientation control<br><br>
+        </div>
+    
 		<script src="js/pixi.min.js"></script>
+    <script src="js/fulltilt.min.js"></script>
 		<script>
       let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight});
       let alpha;
@@ -33,6 +43,11 @@
         displacementFilter.scale.y = (window.innerHeight / 2 - e.clientY) /40;
         console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
       };
+      window.ontouchmove = function(e) {
+        displacementFilter.scale.x = -(window.innerWidth / 2 - e.pageX) /30;
+        displacementFilter.scale.y = -(window.innerHeight / 2 - e.pageY) /30;
+        console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
+      };
       
       /*
       //if (window.DeviceOrientationEvent) {
@@ -50,13 +65,60 @@
         displacementFilter.scale.y = (window.innerHeight / 2 - frontToBack) /40;
       };*/
       
+      var initRotateDegrees;
+      var initFrontToBack;
+      var initLeftToRight;
+      var speed = 0.3;
+      var lastRotateDegrees;
+      var lastFrontToBack;
+      var lastLeftToRight;
+      
       function direction() {
+        
+        
             var rotateDegrees = event.alpha; // alpha: rotation around z-axis
             var leftToRight = event.gamma; // gamma: left to right
             var frontToBack = event.beta; // beta: front back motion
-            console.log(leftToRight + " " + rotateDegrees);
-            displacementFilter.scale.x = rotateDegrees/10;
-            displacementFilter.scale.y = frontToBack/10;
+            
+            var leftToRightFlag = 0;
+            var frontToBackFlag = 0;
+            var rotateDegreesFlag = 0;
+            
+            if (initFrontToBack === undefined){
+              initRotateDegrees = rotateDegrees;
+              initFrontToBack = frontToBack;
+              initLeftToRight = leftToRight;
+            }
+            
+            if (initLeftToRight > leftToRight){
+              leftToRightFlag = 1;
+            }else{
+              leftToRightFlag = -1;
+            }
+            if (initFrontToBack > frontToBack){
+              frontToBackFlag = 1;
+            }else{
+              frontToBackFlag = -1;
+            }
+            if (initRotateDegrees > rotateDegrees){
+              rotateDegreesFlag = 1;
+            }else{
+              rotateDegreesFlag = -1;
+            }
+            
+            if (Math.abs(displacementFilter.scale.x) < 15){
+              displacementFilter.scale.x = displacementFilter.scale.x + Math.sin(leftToRight);
+            }
+            if (Math.abs(displacementFilter.scale.y) < 15){
+              displacementFilter.scale.y = displacementFilter.scale.y + Math.sin(frontToBack);
+            }
+            //displacementFilter.scale.x = displacementFilter.scale.x + Math.sin(leftToRight);
+            //displacementFilter.scale.y = displacementFilter.scale.y + Math.sin(frontToBack);
+            console.log(rotateDegreesFlag + " " + leftToRightFlag +" " + frontToBackFlag);
+            
+            lastLeftToRight = leftToRight;
+            lastFrontToBack = frontToBack;
+            lastRotateDegrees = rotateDegrees;
       }
       var mobileDevice = false;
       try {
@@ -66,23 +128,21 @@
         console.log("DeviceMotionEvent is not defined");
       }
           
-          
-      if (mobileDevice && typeof DeviceMotionEvent.requestPermission==="function") { // iOS 13+ devices
-        document.getElementsByTagName("canvas")[0].addEventListener("click touchstart", function(){
-          DeviceMotionEvent.requestPermission()
-            .then((state)=>{
-              if (state==="granted") {
-                window.addEventListener("deviceorientation", direction);
-                compassOn=true;
-              } else {
-                console.error("Motion sensor access denied.");}})
-            .catch(console.error);
-          }, 
-        false);
-             
-            } else { // non iOS 13+ devices
-              window.addEventListener("deviceorientation", direction);
-        }
+      function enableSensor(){
+        if (mobileDevice && typeof DeviceMotionEvent.requestPermission==="function") { // iOS 13+ devices
+            DeviceMotionEvent.requestPermission()
+              .then((state)=>{
+                if (state==="granted") {
+                  window.addEventListener("deviceorientation", direction);
+                  compassOn=true;
+                } else {
+                  console.error("Motion sensor access denied.");}})
+              .catch(console.error);
+          } else { // non iOS 13+ devices
+            window.addEventListener("deviceorientation", direction);
+          }
+      }    
+      
 		</script>
 	</body>
 </html>
