@@ -73,52 +73,38 @@
       var lastFrontToBack;
       var lastLeftToRight;
       
+     
+     
+      
       function direction() {
         
+        var promise = FULLTILT.getDeviceOrientation({'type': 'game'});
+        		promise.then(function(orientationControl) {
+
+        			orientationControl.listen(function() {
+
+        				// Get latest screen-adjusted deviceorientation data
+        				var screenAdjustedEvent = orientationControl.getScreenAdjustedEuler();
+                
+                var rotateDegrees = screenAdjustedEvent.alpha;
+                var frontToBack = screenAdjustedEvent.beta;
+                var leftToRight = screenAdjustedEvent.gamma;
+                if(initLeftToRight === undefined){
+                  initLeftToRight = leftToRight;
+                  initFrontToBack = frontToBack;
+                }
+                
+                displacementFilter.scale.x = leftToRight /1;
+                displacementFilter.scale.y = -(initFrontToBack - frontToBack) /1;
+                
+
+                //console.log(screenAdjustedEvent);
+                console.log(" " + frontToBack + " " +leftToRight);
+        			});
+
+        		});
         
-            var rotateDegrees = event.alpha; // alpha: rotation around z-axis
-            var leftToRight = event.gamma; // gamma: left to right
-            var frontToBack = event.beta; // beta: front back motion
-            
-            var leftToRightFlag = 0;
-            var frontToBackFlag = 0;
-            var rotateDegreesFlag = 0;
-            
-            if (initFrontToBack === undefined){
-              initRotateDegrees = rotateDegrees;
-              initFrontToBack = frontToBack;
-              initLeftToRight = leftToRight;
-            }
-            
-            if (initLeftToRight > leftToRight){
-              leftToRightFlag = 1;
-            }else{
-              leftToRightFlag = -1;
-            }
-            if (initFrontToBack > frontToBack){
-              frontToBackFlag = 1;
-            }else{
-              frontToBackFlag = -1;
-            }
-            if (initRotateDegrees > rotateDegrees){
-              rotateDegreesFlag = 1;
-            }else{
-              rotateDegreesFlag = -1;
-            }
-            
-            if (Math.abs(displacementFilter.scale.x) < 15){
-              displacementFilter.scale.x = displacementFilter.scale.x + Math.sin(leftToRight);
-            }
-            if (Math.abs(displacementFilter.scale.y) < 15){
-              displacementFilter.scale.y = displacementFilter.scale.y + Math.sin(frontToBack);
-            }
-            //displacementFilter.scale.x = displacementFilter.scale.x + Math.sin(leftToRight);
-            //displacementFilter.scale.y = displacementFilter.scale.y + Math.sin(frontToBack);
-            console.log(rotateDegreesFlag + " " + leftToRightFlag +" " + frontToBackFlag);
-            
-            lastLeftToRight = leftToRight;
-            lastFrontToBack = frontToBack;
-            lastRotateDegrees = rotateDegrees;
+          
       }
       var mobileDevice = false;
       try {
@@ -133,13 +119,12 @@
             DeviceMotionEvent.requestPermission()
               .then((state)=>{
                 if (state==="granted") {
-                  window.addEventListener("deviceorientation", direction);
-                  compassOn=true;
+                  direction();
                 } else {
                   console.error("Motion sensor access denied.");}})
               .catch(console.error);
           } else { // non iOS 13+ devices
-            window.addEventListener("deviceorientation", direction);
+            direction();
           }
       }    
       
