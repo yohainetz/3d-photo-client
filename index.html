@@ -41,12 +41,12 @@
       window.onmousemove = function(e) {
         displacementFilter.scale.x = (window.innerWidth / 2 - e.clientX) /40;
         displacementFilter.scale.y = (window.innerHeight / 2 - e.clientY) /40;
-        console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
+        //console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
       };
       window.ontouchmove = function(e) {
         displacementFilter.scale.x = -(window.innerWidth / 2 - e.pageX) /30;
         displacementFilter.scale.y = -(window.innerHeight / 2 - e.pageY) /30;
-        console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
+        //console.log(displacementFilter.scale.x + " " + displacementFilter.scale.y);
       };
       
       /*
@@ -98,8 +98,7 @@
                 displacementFilter.scale.y = -(initFrontToBack - frontToBack) /1;
                 
 
-                //console.log(screenAdjustedEvent);
-                console.log(" " + frontToBack + " " +leftToRight);
+                //console.log(" " + frontToBack + " " +leftToRight);
         			});
 
         		});
