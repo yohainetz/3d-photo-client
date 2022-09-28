@@ -96,7 +96,7 @@
             }
             
             displacementFilter.scale.x = leftToRight /1;
-            displacementFilter.scale.y = -(initFrontToBack - frontToBack) /1;
+            displacementFilter.scale.y = -(initFrontToBack - frontToBack) % 360;
             
 
             //console.log(" " + frontToBack + " " +leftToRight);
