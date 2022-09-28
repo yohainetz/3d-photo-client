@@ -5,21 +5,48 @@
 		<title>My first three.js app</title>
 		<style>
 			body { margin: 0; }
+      
+      #overlay {
+      	position: absolute;
+      	z-index: 2;
+      	top: 0;
+      	left: 0;
+      	width: 100%;
+      	height: 100%;
+      	display: flex;
+      	align-items: center;
+      	justify-content: center;
+      	background: rgba(0,0,0,0.7);
+      }
+
+      	#overlay button {
+      		background: #ffffff;
+      		border: 0;
+      		color: #000000;
+      		padding: 16px 20px;
+      		text-transform: uppercase;
+      		cursor: pointer;
+          min-width: 20%;
+          min-height: 8%;
+          font-size: 20pt;
+      	}
 		</style>
 	</head>
 	<body>
-    <div id="dial">
+    <!--<div id="dial">
           <div id="instructions" onclick="enableSensor()">
             <span id="close">×</span>
-            <!--<strong>iOS:</strong> 
             Allow motion sensor access.<br>
-            <strong>Android:</strong> Align smartphone to the north, reload page, allow motion sensor access.</div> -->
+            <strong>Android:</strong> Align smartphone to the north, reload page, allow motion sensor access.</div> 
             Click to start device orientation control<br><br>
-        </div>
+        </div> -->
+    <div id="overlay">
+			<button id="startButton" onclick="enableSensor()">Start</button>
+		</div>
     
 		<script src="js/pixi.min.js"></script>
     <script src="js/fulltilt.min.js"></script>
-    <script src="js/doe.js"></script>
+    <!-- <script src="js/doe.js"></script> -->
 		<script>
       let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight});
       let alpha;
@@ -114,6 +141,10 @@
       }
           
       function enableSensor(){
+      	const overlay = document.getElementById( 'overlay' );
+      	overlay.remove();
+        
+        
         if (mobileDevice && typeof DeviceMotionEvent.requestPermission==="function") { // iOS 13+ devices
             DeviceMotionEvent.requestPermission()
               .then((state)=>{
