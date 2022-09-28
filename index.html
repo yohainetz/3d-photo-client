@@ -19,6 +19,7 @@
     
 		<script src="js/pixi.min.js"></script>
     <script src="js/fulltilt.min.js"></script>
+    <script src="js/doe.js"></script>
 		<script>
       let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight});
       let alpha;
@@ -79,32 +80,31 @@
       function direction() {
         
         var promise = FULLTILT.getDeviceOrientation({'type': 'game'});
-        		promise.then(function(orientationControl) {
+    		promise.then(function(orientationControl) {
 
-        			orientationControl.listen(function() {
+    			orientationControl.listen(function() {
 
-        				// Get latest screen-adjusted deviceorientation data
-        				var screenAdjustedEvent = orientationControl.getScreenAdjustedEuler();
-                
-                var rotateDegrees = screenAdjustedEvent.alpha;
-                var frontToBack = screenAdjustedEvent.beta;
-                var leftToRight = screenAdjustedEvent.gamma;
-                if(initLeftToRight === undefined){
-                  initLeftToRight = leftToRight;
-                  initFrontToBack = frontToBack;
-                }
-                
-                displacementFilter.scale.x = leftToRight /1;
-                displacementFilter.scale.y = -(initFrontToBack - frontToBack) /1;
-                
+    				// Get latest screen-adjusted deviceorientation data
+    				var screenAdjustedEvent = orientationControl.getScreenAdjustedEuler();
+            
+            var rotateDegrees = screenAdjustedEvent.alpha;
+            var frontToBack = screenAdjustedEvent.beta;
+            var leftToRight = screenAdjustedEvent.gamma;
+            if(initLeftToRight === undefined){
+              initLeftToRight = leftToRight;
+              initFrontToBack = frontToBack;
+            }
+            
+            displacementFilter.scale.x = leftToRight /1;
+            displacementFilter.scale.y = -(initFrontToBack - frontToBack) /1;
+            
 
-                //console.log(" " + frontToBack + " " +leftToRight);
-        			});
+            //console.log(" " + frontToBack + " " +leftToRight);
+    			});
 
-        		});
-        
-          
+    		});    
       }
+      
       var mobileDevice = false;
       try {
         DeviceMotionEvent;
